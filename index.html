@@ -9,12 +9,12 @@
             font-family: Arial, sans-serif;
             margin: 0;
             padding: 0;
-            background-color: #f4f4f9;
-            color: #333;
+            background-color: #e6f3ff;
+            color: #003366;
             line-height: 1.6;
         }
         header {
-            background: #4CAF50;
+            background: #00509e;
             color: #fff;
             padding: 1rem 0;
             text-align: center;
@@ -23,12 +23,12 @@
             max-width: 800px;
             margin: 2rem auto;
             padding: 1rem;
-            background: #fff;
+            background: #f0f8ff;
             border-radius: 8px;
             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
         }
         h1, h2 {
-            color: #333;
+            color: #003366;
         }
         ul {
             list-style-type: none;
@@ -37,12 +37,12 @@
         li {
             margin: 1rem 0;
             padding: 1rem;
-            border: 1px solid #ddd;
+            border: 1px solid #b3d9ff;
             border-radius: 8px;
-            background: #f9f9f9;
+            background: #e6f7ff;
         }
         a {
-            color: #4CAF50;
+            color: #00509e;
             text-decoration: none;
         }
         a:hover {
@@ -56,19 +56,19 @@
             padding: 0.5rem;
             margin: 0.5rem 0;
             width: 80%;
-            border: 1px solid #ccc;
+            border: 1px solid #00509e;
             border-radius: 4px;
         }
         .add-item button {
             padding: 0.5rem 1rem;
-            background: #4CAF50;
+            background: #00509e;
             color: #fff;
             border: none;
             border-radius: 4px;
             cursor: pointer;
         }
         .add-item button:hover {
-            background: #45a049;
+            background: #004080;
         }
     </style>
 </head>
@@ -80,62 +80,73 @@
     <div class="container">
         <h2>Resources</h2>
         <ul id="resource-list">
-            <li>
-                <strong>Paper 1: 3DGS for Wide Scenes</strong><br>
-                <a href="https://example.com/paper1" target="_blank">View Paper</a><br>
-                A study on the application of 3D Gaussian Splatting for wide and complex scenes.
-            </li>
-            <li>
-                <strong>Paper 2: Efficient Rendering with 3DGS</strong><br>
-                <a href="https://example.com/paper2" target="_blank">View Paper</a><br>
-                Techniques for optimizing rendering efficiency in large-scale 3D environments.
-            </li>
-            <li>
-                <strong>Code Repository 1</strong><br>
-                <a href="https://github.com/example/repo1" target="_blank">View Code on GitHub</a><br>
-                Official implementation for the "3DGS for Wide Scenes" paper.
-            </li>
-            <li>
-                <strong>Code Repository 2</strong><br>
-                <a href="https://github.com/example/repo2" target="_blank">View Code on GitHub</a><br>
-                Tools and utilities for 3D Gaussian Splatting.
-            </li>
+            <!-- Dynamic resources will be loaded here -->
         </ul>
         <div class="add-item">
             <h2>Add a New Resource</h2>
             <input id="title" type="text" placeholder="Enter title (e.g., Paper 3: Advanced Techniques)"><br>
-            <input id="link" type="url" placeholder="Enter URL (e.g., https://example.com)"><br>
+            <input id="paper-link" type="url" placeholder="Enter paper URL (e.g., https://example.com/paper)"><br>
+            <input id="code-link" type="url" placeholder="Enter code URL (e.g., https://github.com/repo)"><br>
             <input id="description" type="text" placeholder="Enter description (e.g., Details about the resource)"><br>
             <button onclick="addResource()">Add Resource</button>
         </div>
     </div>
 
     <script>
-        function addResource() {
-            const title = document.getElementById('title').value;
-            const link = document.getElementById('link').value;
-            const description = document.getElementById('description').value;
+        const resourcesFile = 'resources.xlsx';
 
-            if (!title || !link || !description) {
-                alert('Please fill out all fields before adding a resource.');
-                return;
+        // Load resources from Excel file
+        async function loadResources() {
+            try {
+                const response = await fetch(resourcesFile);
+                const data = await response.text();
+                const rows = data.split('\n');
+
+                rows.forEach(row => {
+                    const [title, paperLink, codeLink, description] = row.split(',');
+                    if (title && paperLink && codeLink && description) {
+                        addResourceToList(title, paperLink, codeLink, description);
+                    }
+                });
+            } catch (error) {
+                console.error('Error loading resources:', error);
             }
+        }
 
+        function addResourceToList(title, paperLink, codeLink, description) {
             const ul = document.getElementById('resource-list');
             const li = document.createElement('li');
 
             li.innerHTML = `
                 <strong>${title}</strong><br>
-                <a href="${link}" target="_blank">View Resource</a><br>
+                <a href="${paperLink}" target="_blank">View Paper</a><br>
+                <a href="${codeLink}" target="_blank">View Code</a><br>
                 ${description}
             `;
 
             ul.appendChild(li);
+        }
+
+        function addResource() {
+            const title = document.getElementById('title').value;
+            const paperLink = document.getElementById('paper-link').value;
+            const codeLink = document.getElementById('code-link').value;
+            const description = document.getElementById('description').value;
+
+            if (!title || !paperLink || !codeLink || !description) {
+                alert('Please fill out all fields before adding a resource.');
+                return;
+            }
+
+            addResourceToList(title, paperLink, codeLink, description);
 
             document.getElementById('title').value = '';
-            document.getElementById('link').value = '';
+            document.getElementById('paper-link').value = '';
+            document.getElementById('code-link').value = '';
             document.getElementById('description').value = '';
         }
+
+        loadResources();
     </script>
 </body>
 </html>
